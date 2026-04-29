@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sepetim - Tablo Galerisi</title>
+  <link href="assets/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body { background-color: #fff5f8; }
+    .pink-header { color: #f089c0; }
+    .table-pink { background: white; border-radius: 10px; overflow: hidden; }
+    .btn-checkout { background-color: #f8a5d1; border-color: #f8a5d1; color: white; }
+    .btn-checkout:hover { background-color: #f089c0; color: white; }
+  </style>
+</head>
+<body>
+  <div class="container py-5">
+    <div class="row">
+      <div class="col-md-8">
+        <h2 class="pink-header mb-4 font-weight-bold">Sepetim</h2>
+        <div class="table-pink shadow-sm">
+          <table class="table mb-0 align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Ürün</th>
+                <th>Adet</th>
+                <th>Fiyat</th>
+                <th>İşlem</th>
+              </tr>
+            </thead>
+            <tbody id="sepetTablosu">
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card shadow-sm border-0 p-4">
+          <h4 class="pink-header">Özet</h4>
+          <hr>
+          <div class="d-flex justify-content-between mb-2">
+            <span>Ara Toplam</span>
+            <span id="araToplam">0 TL</span>
+          </div>
+          <div class="d-flex justify-content-between mb-4">
+            <span class="fw-bold">Toplam</span>
+            <span class="fw-bold text-dark" id="toplamTutar">0 TL</span>
+          </div>
+          <button class="btn btn-checkout w-100 py-2">Alışverişi Tamamla</button>
+          <a href="index.html" class="btn btn-link w-100 mt-2 text-muted small text-decoration-none">← Alışverişe Devam Et</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  function sepetiGoster() {
+    let sepet = JSON.parse(localStorage.getItem('sepetim')) || [];
+    let tabloBody = document.getElementById("sepetTablosu");
+    let toplamLabel = document.getElementById("toplamTutar");
+    
+    if (!tabloBody) return;
+    tabloBody.innerHTML = ""; 
+    let toplam = 0;
+
+    if (sepet.length === 0) {
+      tabloBody.innerHTML = "<tr><td colspan='4' class='text-center py-4'>Sepetiniz şu an boş.</td></tr>";
+    } else {
+      sepet.forEach((urun, index) => {
+        // NaN hatasını önlemek için fiyatı sayıya zorla
+        let fiyat = Number(urun.urunFiyat) || 0;
+        toplam += fiyat;
+
+        tabloBody.innerHTML += `
+          <tr>
+            <td>${urun.urunAd || 'İsimsiz Ürün'}</td>
+            <td>1 Adet</td>
+            <td>${fiyat} TL</td>
+            <td><button class="btn btn-sm text-danger" onclick="sil(${index})">Kaldır</button></td>
+          </tr>
+        `;
+      });
+    }
+    
+    if (toplamLabel) toplamLabel.innerText = toplam + " TL";
+  }
+
+  function sil(index) {
+    let sepet = JSON.parse(localStorage.getItem('sepetim'));
+    sepet.splice(index, 1);
+    localStorage.setItem('sepetim', JSON.stringify(sepet));
+    sepetiGoster();
+  }
+
+  window.onload = sepetiGoster;
+</script>
+  <script src="assets/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
